@@ -4,12 +4,18 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import sk.duracik.myaiapplication.model.Plant
 import sk.duracik.myaiapplication.ui.theme.MyAIApplicationTheme
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 @Composable
 fun PlantCard(plant: Plant, modifier: Modifier = Modifier) {
@@ -59,9 +67,31 @@ fun PlantCard(plant: Plant, modifier: Modifier = Modifier) {
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp)
+                    .padding(top = 12.dp, bottom = 4.dp)
                     .align(Alignment.CenterHorizontally)
             )
+
+            // Pridanie zobrazenia počtu dní vlastníctva
+            val daysOwned = ChronoUnit.DAYS.between(plant.dateAdded, LocalDate.now())
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "Počet dní vlastníctva",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.width(20.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "V zbierke $daysOwned dní",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
@@ -74,7 +104,8 @@ fun PlantCardPreview() {
             plant = Plant(
                 id = 1,
                 name = "Aloe Vera",
-                imageUrl = "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921"
+                imageUrl = "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921",
+                dateAdded = LocalDate.now().minusDays(120)
             )
         )
     }
