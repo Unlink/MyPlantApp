@@ -25,6 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,9 +36,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import sk.duracik.myaiapplication.model.Plant
 import sk.duracik.myaiapplication.ui.theme.MyAIApplicationTheme
+import sk.duracik.myaiapplication.viewmodel.PlantDetailViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -44,130 +49,138 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun PlantDetailScreen(
     plantId: Int,
+    plantDetailViewModel: PlantDetailViewModel = viewModel(),
     onNavigateBack: () -> Unit
 ) {
-    // V reálnej aplikácii by sme rastlinu načítavali podľa ID z repository alebo viewModelu
-    val plant = sk.duracik.myaiapplication.repository.PlantRepository.plants.find { it.id == plantId }
-        ?: return
+    // Pri vstupe na obrazovku načítame dáta o rastline
+    LaunchedEffect(plantId) {
+        plantDetailViewModel.loadPlant(plantId)
+    }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = plant.name,
-                        maxLines = 1
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Späť"
+    // Zbieranie stavu z ViewModelu
+    val plant by plantDetailViewModel.plantState.collectAsState()
+
+    // Ak je plant null, ešte dáta nemáme, môžeme zobraziť napr. loading indikátor
+    plant?.let { currentPlant ->
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = currentPlant.name,
+                            maxLines = 1
                         )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors()
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-        ) {
-            // Obrázok rastliny
-            Image(
-                painter = rememberAsyncImagePainter(plant.imageUrl),
-                contentDescription = plant.name,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp)
-            )
-
-            // Názov rastliny
-            Text(
-                text = plant.name,
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                textAlign = TextAlign.Center
-            )
-
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                shape = MaterialTheme.shapes.medium,
-                tonalElevation = 4.dp
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                ) {
-                    // Dátum pridania
-                    Text(
-                        text = "Informácie o rastline",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.DateRange,
-                            contentDescription = "Dátum pridania",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text(
-                                text = "Dátum pridania do zbierky",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                text = plant.dateAdded.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.SemiBold
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onNavigateBack) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Späť"
                             )
                         }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors()
+                )
+            }
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                // Obrázok rastliny
+                Image(
+                    painter = rememberAsyncImagePainter(currentPlant.imageUrl),
+                    contentDescription = currentPlant.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp)
+                )
+
+                // Názov rastliny
+                Text(
+                    text = currentPlant.name,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    textAlign = TextAlign.Center
+                )
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    tonalElevation = 4.dp
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                    ) {
+                        // Dátum pridania
+                        Text(
+                            text = "Informácie o rastline",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.DateRange,
+                                contentDescription = "Dátum pridania",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Text(
+                                    text = "Dátum pridania do zbierky",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Text(
+                                    text = currentPlant.dateAdded.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
+
+                        // Počet dní vlastníctva
+                        val daysOwned = ChronoUnit.DAYS.between(currentPlant.dateAdded, LocalDate.now())
+                        Text(
+                            text = "V zbierke: $daysOwned dní",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+
+                        // Popis rastliny
+                        val plantDescription = "Táto ${currentPlant.name.lowercase()} je skvelým doplnkom každej domácnosti. " +
+                                "Poskytuje príjemný vzhľad a zlepšuje kvalitu vzduchu. " +
+                                "Túto rastlinu máte vo svojej zbierke už $daysOwned dní."
+
+                        Text(
+                            text = "Popis",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                        )
+
+                        Text(
+                            text = plantDescription,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
                     }
-
-                    // Počet dní vlastníctva
-                    val daysOwned = ChronoUnit.DAYS.between(plant.dateAdded, LocalDate.now())
-                    Text(
-                        text = "V zbierke: $daysOwned dní",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-
-                    // Popis rastliny
-                    val plantDescription = "Táto ${plant.name.lowercase()} je skvelým doplnkom každej domácnosti. " +
-                            "Poskytuje príjemný vzhľad a zlepšuje kvalitu vzduchu. " +
-                            "Túto rastlinu máte vo svojej zbierke už $daysOwned dní."
-
-                    Text(
-                        text = "Popis",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                    )
-
-                    Text(
-                        text = plantDescription,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
                 }
             }
         }

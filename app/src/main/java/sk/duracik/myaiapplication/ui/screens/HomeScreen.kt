@@ -13,21 +13,27 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import sk.duracik.myaiapplication.R
+import androidx.lifecycle.viewmodel.compose.viewModel
 import sk.duracik.myaiapplication.repository.PlantRepository
 import sk.duracik.myaiapplication.ui.components.PlantCard
 import sk.duracik.myaiapplication.ui.theme.MyAIApplicationTheme
+import sk.duracik.myaiapplication.viewmodel.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    homeViewModel: HomeViewModel = viewModel(),
     onPlantClick: (plantId: Int) -> Unit = {}
 ) {
+    // Zbieranie stavu z ViewModelu
+    val plants by homeViewModel.plants.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -51,7 +57,7 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            items(PlantRepository.plants) { plant ->
+            items(plants) { plant ->
                 PlantCard(
                     plant = plant,
                     onClick = { onPlantClick(plant.id) }
