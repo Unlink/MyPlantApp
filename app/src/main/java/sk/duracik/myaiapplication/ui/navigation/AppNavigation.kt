@@ -12,9 +12,11 @@ import sk.duracik.myaiapplication.PlantApplication
 import sk.duracik.myaiapplication.ui.screens.AddPlantScreen
 import sk.duracik.myaiapplication.ui.screens.HomeScreen
 import sk.duracik.myaiapplication.ui.screens.PlantDetailScreen
+import sk.duracik.myaiapplication.ui.screens.WateringHistoryScreen
 import sk.duracik.myaiapplication.viewmodel.AddPlantViewModel
 import sk.duracik.myaiapplication.viewmodel.HomeViewModel
 import sk.duracik.myaiapplication.viewmodel.PlantDetailViewModel
+import sk.duracik.myaiapplication.viewmodel.WateringHistoryViewModel
 
 // Definícia navigačných cieľov
 sealed class Screen(val route: String) {
@@ -23,6 +25,9 @@ sealed class Screen(val route: String) {
         fun createRoute(plantId: Int) = "plant/$plantId"
     }
     object AddPlant : Screen("add_plant")
+    object WateringHistory : Screen("watering_history/{plantId}") {
+        fun createRoute(plantId: Int) = "watering_history/$plantId"
+    }
 }
 
 @Composable
@@ -68,7 +73,10 @@ fun AppNavigation(navController: NavHostController) {
             PlantDetailScreen(
                 plantId = plantId,
                 plantDetailViewModel = plantDetailViewModel,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToWateringHistory = { plantId ->
+                    navController.navigate(Screen.WateringHistory.createRoute(plantId))
+                }
             )
         }
 
@@ -85,6 +93,25 @@ fun AppNavigation(navController: NavHostController) {
                     // Po úspešnom pridaní rastliny sa vrátime na domovskú obrazovku
                     navController.popBackStack()
                 }
+            )
+        }
+
+        composable(
+            route = Screen.WateringHistory.route,
+            arguments = listOf(
+                navArgument("plantId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val plantId = backStackEntry.arguments?.getInt("plantId") ?: return@composable
+
+            val wateringHistoryViewModel: WateringHistoryViewModel = viewModel(
+                factory = WateringHistoryViewModel.WateringHistoryViewModelFactory(repository)
+            )
+
+            WateringHistoryScreen(
+                plantId = plantId,
+                wateringHistoryViewModel = wateringHistoryViewModel,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

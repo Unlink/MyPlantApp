@@ -1,5 +1,6 @@
 package sk.duracik.myaiapplication.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -71,8 +72,11 @@ fun PlantDetailScreen(
             (LocalContext.current.applicationContext as PlantApplication).repository
         )
     ),
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToWateringHistory: (Int) -> Unit = {}
 ) {
+    val context = LocalContext.current
+
     // Pri vstupe na obrazovku načítame dáta o rastline
     LaunchedEffect(plantId) {
         plantDetailViewModel.loadPlant(plantId)
@@ -291,12 +295,29 @@ fun PlantDetailScreen(
                                         style = MaterialTheme.typography.bodySmall,
                                         modifier = Modifier.padding(start = 32.dp, top = 4.dp)
                                     )
+
+                                    // Pridanie tlačidla na zobrazenie histórie zalievania
+                                    Button(
+                                        onClick = { onNavigateToWateringHistory(currentPlant.id) },
+                                        modifier = Modifier
+                                            .padding(start = 32.dp, top = 8.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.DateRange,
+                                            contentDescription = "História zalievania"
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text("Zobraziť históriu")
+                                    }
                                 }
                             }
 
                             // Tlačidlo na zaliatie rastliny
                             Button(
-                                onClick = { plantDetailViewModel.waterPlant() }
+                                onClick = {
+                                    plantDetailViewModel.waterPlant()
+                                    Toast.makeText(context, "Rastlina bola zaliata", Toast.LENGTH_SHORT).show()
+                                }
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.WaterDrop,
