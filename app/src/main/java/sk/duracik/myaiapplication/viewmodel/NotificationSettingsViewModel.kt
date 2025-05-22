@@ -18,6 +18,7 @@ import sk.duracik.myaiapplication.PlantApplication
 class NotificationSettingsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val preferencesManager = NotificationPreferencesManager(application)
+    private val wateringWorkerScheduler = (application as PlantApplication).wateringWorkerScheduler
 
     // Stav počtu dní medzi notifikáciami
     private val _notificationDays = MutableStateFlow(3)
@@ -87,6 +88,8 @@ class NotificationSettingsViewModel(application: Application) : AndroidViewModel
         viewModelScope.launch {
             _notificationDays.value = days
             preferencesManager.setNotificationDays(days)
+            // Pri zmene nastavení aktualizujeme worker
+            wateringWorkerScheduler.setupWorker()
         }
     }
 
@@ -98,6 +101,8 @@ class NotificationSettingsViewModel(application: Application) : AndroidViewModel
             _notificationHour.value = hour
             _notificationMinute.value = minute
             preferencesManager.setNotificationTime(hour, minute)
+            // Pri zmene času aktualizujeme worker
+            wateringWorkerScheduler.setupWorker()
         }
     }
 
@@ -108,6 +113,8 @@ class NotificationSettingsViewModel(application: Application) : AndroidViewModel
         viewModelScope.launch {
             _notificationsEnabled.value = enabled
             preferencesManager.setNotificationsEnabled(enabled)
+            // Pri zapnutí/vypnutí notifikácií aktualizujeme worker
+            wateringWorkerScheduler.setupWorker()
         }
     }
 

@@ -5,7 +5,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import sk.duracik.myaiapplication.data.DataInitializer
 import sk.duracik.myaiapplication.data.local.PlantDatabase
+import sk.duracik.myaiapplication.data.preferences.NotificationPreferencesManager
 import sk.duracik.myaiapplication.data.repository.PlantRepository
+import sk.duracik.myaiapplication.worker.WateringWorkerScheduler
 
 class PlantApplication : Application() {
     // Scope pre aplikáciu - bude existovať počas celého života aplikácie
@@ -21,6 +23,18 @@ class PlantApplication : Application() {
         )
     }
 
+    // Notification preferences manager
+    val preferencesManager by lazy { NotificationPreferencesManager(this) }
+
+    // Scheduler for watering notifications worker
+    val wateringWorkerScheduler by lazy {
+        WateringWorkerScheduler(
+            this,
+            preferencesManager,
+            repository
+        )
+    }
+
     // Data inicializátor pre prepopuláciu databázy pri prvom spustení
     private val dataInitializer by lazy { DataInitializer(repository, applicationScope) }
 
@@ -29,5 +43,8 @@ class PlantApplication : Application() {
 
         // Inicializácia databázy ukážkovými dátami pri štarte aplikácie
         dataInitializer.populateDatabase()
+
+        // Setup the watering notification worker
+        wateringWorkerScheduler.setupWorker()
     }
 }

@@ -7,6 +7,7 @@
     <!-- Povolenie pre kameru -->
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- Povolenia pre prístup k úložisku (pre Android 10 a nižšie) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
     <!-- Nové povolenie pre prístup k médiám (od Android 13) -->

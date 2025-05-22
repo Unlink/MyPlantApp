@@ -49,6 +49,10 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+
+    // WorkManager for background tasks
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+
     implementation(libs.androidx.material3)
 
     // Coil for image loading
@@ -66,6 +70,7 @@ dependencies {
     // Accompanist permissions pre jednoduchšiu správu povolení v Compose
     implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
     implementation(libs.androidx.datastore.core.android)
+    implementation(libs.androidx.work.runtime.ktx)
 
     // Room database
     val roomVersion = "2.7.1"
