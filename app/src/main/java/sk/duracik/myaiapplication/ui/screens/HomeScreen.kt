@@ -37,7 +37,7 @@ fun HomeScreen(
     onAddPlantClick: () -> Unit = {}
 ) {
     // Zbieranie stavu z ViewModelu
-    val plants by homeViewModel.plants.collectAsState()
+    val plants by homeViewModel.plants.collectAsState(emptyList())
 
     Scaffold(
         topBar = {
@@ -45,8 +45,7 @@ fun HomeScreen(
                 title = {
                     Text(
                         text = "Moja zbierka rastlín",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        maxLines = 1
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors()

@@ -200,10 +200,6 @@ fun PlantDetailScreen(
                         )
 
                         // Popis rastliny
-                        val plantDescription = "Táto ${currentPlant.name.lowercase()} je skvelým doplnkom každej domácnosti. " +
-                                "Poskytuje príjemný vzhľad a zlepšuje kvalitu vzduchu. " +
-                                "Túto rastlinu máte vo svojej zbierke už $daysOwned dní."
-
                         Text(
                             text = "Popis",
                             style = MaterialTheme.typography.titleLarge,
@@ -211,8 +207,17 @@ fun PlantDetailScreen(
                             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                         )
 
+                        // Používame popis z modelu namiesto statického textu
+                        val description = if (currentPlant.description.isNotBlank()) {
+                            currentPlant.description
+                        } else {
+                            "Táto ${currentPlant.name.lowercase()} je skvelým doplnkom každej domácnosti. " +
+                            "Poskytuje príjemný vzhľad a zlepšuje kvalitu vzduchu. " +
+                            "Túto rastlinu máte vo svojej zbierke už $daysOwned dní."
+                        }
+
                         Text(
-                            text = plantDescription,
+                            text = description,
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(vertical = 4.dp)
                         )

@@ -4,7 +4,11 @@ import sk.duracik.myaiapplication.model.Plant
 import java.time.LocalDate
 
 object PlantRepository {
-    val plants = listOf(
+    fun AddPlant(plant: Plant) {
+        plants = plants + plant
+    }
+
+    var plants = listOf(
         Plant(
             id = 1,
             name = "Aloe Vera",

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.devtools.ksp") version "2.1.21-2.0.1"
 }
 
 android {
@@ -58,6 +59,12 @@ dependencies {
 
     // Novšia Compose Pager knižnica namiesto zastaralej Accompanist
     implementation("androidx.compose.foundation:foundation:1.6.0")
+
+    // Room database
+    val roomVersion = "2.7.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")  // Kotlin Extensions a Coroutines support pre Room
+    ksp("androidx.room:room-compiler:$roomVersion") // Generátor kódu pre Room
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

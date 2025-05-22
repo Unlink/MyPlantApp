@@ -1,26 +1,30 @@
 package sk.duracik.myaiapplication.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import sk.duracik.myaiapplication.data.repository.PlantRepository
 import sk.duracik.myaiapplication.model.Plant
-import sk.duracik.myaiapplication.repository.PlantRepository
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(private val repository: PlantRepository) : ViewModel() {
 
-    // Stav obsahujúci zoznam rastlín
-    private val _plants = MutableStateFlow(PlantRepository.plants)
-    val plants: StateFlow<List<Plant>> = _plants.asStateFlow()
+    // Stav obsahujúci zoznam rastlín - teraz načítaný z databázy
+    val plants = repository.allPlants
 
-    // Funkcia na filtrovanie rastlín (môže byť rozšírená v budúcnosti)
-    fun filterPlants(query: String = "") {
-        if (query.isEmpty()) {
-            _plants.value = PlantRepository.plants
-        } else {
-            _plants.value = PlantRepository.plants.filter {
-                it.name.contains(query, ignoreCase = true)
+    // Funkcia na filtrovanie rastlín (môže byť implementovaná neskôr)
+
+    // Factory trieda pre vytvorenie ViewModelu s repozitárom
+    class HomeViewModelFactory(private val repository: PlantRepository) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return HomeViewModel(repository) as T
             }
+            throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
 }
