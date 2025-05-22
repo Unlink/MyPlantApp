@@ -93,4 +93,39 @@ class ImageHelper(private val context: Context) {
             return null
         }
     }
+
+    /**
+     * Vymaže fyzický súbor obrázka
+     * @param fileUrl URL súboru vo formáte "file://..."
+     * @return true ak bol súbor úspešne vymazaný, false inak
+     */
+    fun deleteImageFile(fileUrl: String): Boolean {
+        try {
+            // Odstránenie prefixu "file://" pre získanie skutočnej cesty
+            val path = if (fileUrl.startsWith("file://")) {
+                fileUrl.substring(7)
+            } else {
+                fileUrl
+            }
+
+            Log.d("ImageHelper", "Attempting to delete image file: $path")
+            val file = File(path)
+
+            if (!file.exists()) {
+                Log.w("ImageHelper", "File does not exist: $path")
+                return false
+            }
+
+            val deleted = file.delete()
+            if (deleted) {
+                Log.d("ImageHelper", "Successfully deleted image file: $path")
+            } else {
+                Log.e("ImageHelper", "Failed to delete image file: $path")
+            }
+            return deleted
+        } catch (e: Exception) {
+            Log.e("ImageHelper", "Error deleting image file: $fileUrl", e)
+            return false
+        }
+    }
 }

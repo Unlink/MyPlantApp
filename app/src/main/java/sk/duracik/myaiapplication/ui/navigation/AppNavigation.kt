@@ -38,7 +38,7 @@ fun AppNavigation(navController: NavHostController) {
         composable(Screen.Home.route) {
             // Vytvorenie HomeViewModel s repozitárom
             val homeViewModel: HomeViewModel = viewModel(
-                factory = HomeViewModel.HomeViewModelFactory(repository)
+                factory = HomeViewModel.HomeViewModelFactory(repository, (context.applicationContext as PlantApplication))
             )
 
             HomeScreen(
