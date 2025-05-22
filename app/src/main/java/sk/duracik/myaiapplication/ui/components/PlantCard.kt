@@ -38,6 +38,7 @@ import sk.duracik.myaiapplication.model.Plant
 import sk.duracik.myaiapplication.model.Watering
 import sk.duracik.myaiapplication.ui.theme.MyAIApplicationTheme
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -169,7 +170,7 @@ fun PlantCardPreview() {
                     Watering(
                         id = 1,
                         plantId = 1,
-                        date = LocalDate.now().minusDays(3)
+                        date = LocalDateTime.now().minusDays(3)
                     )
                 )
             )

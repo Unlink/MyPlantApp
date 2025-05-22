@@ -125,9 +125,11 @@ fun WateringHistoryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WateringHistoryItem(watering: Watering, today: LocalDate) {
-    val daysSince = ChronoUnit.DAYS.between(watering.date, today)
+    val daysSince = ChronoUnit.DAYS.between(watering.date.toLocalDate(), today)
     val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     val formattedDate = watering.date.format(dateFormatter)
+    val formattedTime = watering.date.format(timeFormatter)
 
     val relativeTimeText = when(daysSince) {
         0L -> "Dnes"
@@ -158,7 +160,7 @@ fun WateringHistoryItem(watering: Watering, today: LocalDate) {
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = formattedDate,
+                    text = "$formattedDate $formattedTime",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

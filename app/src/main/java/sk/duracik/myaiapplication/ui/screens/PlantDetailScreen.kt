@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -285,47 +286,45 @@ fun PlantDetailScreen(
                                         text = wateringText,
                                         style = MaterialTheme.typography.bodyMedium
                                     )
-                                }
 
-                                // Ak máme históriu zalievania, zobrazíme dátum posledného zalievania
-                                if (currentPlant.lastWatering != null) {
-                                    val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-                                    Text(
-                                        text = "Posledné zaliatie: ${currentPlant.lastWatering!!.format(formatter)}",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        modifier = Modifier.padding(start = 32.dp, top = 4.dp)
-                                    )
+                                    // Ak máme históriu zalievania, zobrazíme dátum posledného zalievania
+                                    if (currentPlant.lastWatering != null) {
 
-                                    // Pridanie tlačidla na zobrazenie histórie zalievania
-                                    Button(
-                                        onClick = { onNavigateToWateringHistory(currentPlant.id) },
-                                        modifier = Modifier
-                                            .padding(start = 32.dp, top = 8.dp)
+                                        Spacer(modifier = Modifier.width(8.dp))
+
+                                        // Ikona pre zobrazenie histórie zalievania (bez oramovania)
+                                        IconButton(
+                                            onClick = { onNavigateToWateringHistory(currentPlant.id) },
+                                            modifier = Modifier.size(24.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.DateRange,
+                                                contentDescription = "História zalievania",
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.weight(1f))
+
+                                    Button (
+                                        onClick = {
+                                            plantDetailViewModel.waterPlant()
+                                            Toast.makeText(context, "Rastlina bola zaliata", Toast.LENGTH_SHORT).show()
+                                        }
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Default.DateRange,
-                                            contentDescription = "História zalievania"
+                                            imageVector = Icons.Default.WaterDrop,
+                                            contentDescription = "Zaliať rastlinu"
                                         )
                                         Spacer(modifier = Modifier.width(4.dp))
-                                        Text("Zobraziť históriu")
+                                        Text("Zaliať")
                                     }
                                 }
+
+
                             }
 
-                            // Tlačidlo na zaliatie rastliny
-                            Button(
-                                onClick = {
-                                    plantDetailViewModel.waterPlant()
-                                    Toast.makeText(context, "Rastlina bola zaliata", Toast.LENGTH_SHORT).show()
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.WaterDrop,
-                                    contentDescription = "Zaliať rastlinu"
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("Zaliať")
-                            }
                         }
 
                         // Popis rastliny

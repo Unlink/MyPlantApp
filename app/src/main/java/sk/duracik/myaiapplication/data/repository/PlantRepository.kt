@@ -11,6 +11,7 @@ import sk.duracik.myaiapplication.data.local.WateringEntity
 import sk.duracik.myaiapplication.model.Plant
 import sk.duracik.myaiapplication.model.Watering
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class PlantRepository(
     private val plantDao: PlantDao,
@@ -133,7 +134,7 @@ class PlantRepository(
         // Vytvorenie nového záznamu o zalievaní
         val wateringEntity = WateringEntity(
             plantId = plantId,
-            date = LocalDate.now().toString()
+            date = LocalDateTime.now().toString()
         )
 
         // Uloženie záznamu o zalievaní do databázy

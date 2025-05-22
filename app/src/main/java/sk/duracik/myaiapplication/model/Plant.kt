@@ -1,6 +1,7 @@
 package sk.duracik.myaiapplication.model
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 data class Plant(
@@ -16,15 +17,10 @@ data class Plant(
         get() = imageUrls.firstOrNull() ?: ""
 
     // Dátum posledného zalievania
-    val lastWatering: LocalDate?
+    val lastWatering: LocalDateTime?
         get() = wateringRecords.maxByOrNull { it.date }?.date
 
     // Počet dní od posledného zalievania
     val daysSinceLastWatering: Long
-        get() = lastWatering?.let { ChronoUnit.DAYS.between(it, LocalDate.now()) } ?: -1
-
-    // Pridanie nového záznamu o zalievaní
-    fun addWatering(watering: Watering): Plant {
-        return copy(wateringRecords = wateringRecords + watering)
-    }
+        get() = lastWatering?.let { ChronoUnit.DAYS.between(it, LocalDateTime.now()) } ?: -1
 }

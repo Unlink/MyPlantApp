@@ -6,6 +6,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import sk.duracik.myaiapplication.model.Watering
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Entity(
     tableName = "waterings",
@@ -35,11 +36,21 @@ data class WateringEntity(
         }
 
         fun toWatering(entity: WateringEntity): Watering {
-            return Watering(
-                id = entity.id,
-                plantId = entity.plantId,
-                date = LocalDate.parse(entity.date)
-            )
+            return try {
+                // Skúsi najprv parsovať ako LocalDateTime
+                Watering(
+                    id = entity.id,
+                    plantId = entity.plantId,
+                    date = LocalDateTime.parse(entity.date)
+                )
+            } catch (e: Exception) {
+                // Ak sa to nepodarí, predpokladá LocalDate a konvertuje ho na LocalDateTime v čase 00:00
+                Watering(
+                    id = entity.id,
+                    plantId = entity.plantId,
+                    date = LocalDate.parse(entity.date).atStartOfDay()
+                )
+            }
         }
     }
 }
