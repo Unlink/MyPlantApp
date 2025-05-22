@@ -4,6 +4,16 @@
 
     <!-- Povolenie pre prístup na internet -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Povolenie pre kameru -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Povolenia pre prístup k úložisku (pre Android 10 a nižšie) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
+    <!-- Nové povolenie pre prístup k médiám (od Android 13) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- Zaručuje, že zariadenie má fotoaparát -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
         android:name=".PlantApplication"
@@ -16,6 +26,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyAIApplication"
         tools:targetApi="31">
+
+        <!-- Pridanie FileProvider pre zdieľanie fotiek s kamerou -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

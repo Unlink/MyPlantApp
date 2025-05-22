@@ -51,6 +51,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import sk.duracik.myaiapplication.ui.components.ImagePicker
 import sk.duracik.myaiapplication.ui.theme.MyAIApplicationTheme
 import sk.duracik.myaiapplication.viewmodel.AddPlantViewModel
 
@@ -119,117 +120,15 @@ fun AddPlantScreen(
                 singleLine = true
             )
 
-            // Sekcia s fotkami
-            Text(
-                text = "Fotografie",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-            )
-
-            // V skutočnej aplikácii by sme tu implementovali upload fotografií.
-            // Pre demo účely však poskytneme niektoré predefinované obrázky, ktoré si používateľ môže vybrať.
-            val sampleImages = listOf(
-                "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921",
-                "https://images.unsplash.com/photo-1509423350716-97f9360b4e09",
-                "https://images.unsplash.com/photo-1603436326446-58a9002a0a13",
-                "https://images.unsplash.com/photo-1614594075929-b4b3bcc43665",
-                "https://images.unsplash.com/photo-1637967886160-fd0748161114",
-                "https://images.unsplash.com/photo-1459411552884-841db9b3cc2a"
-            )
-
-            // Zobrazenie vybraných fotografií
-            if (addPlantViewModel.imageUrlsState.value.isNotEmpty()) {
-                LazyRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp),
-                    contentPadding = PaddingValues(vertical = 8.dp)
-                ) {
-                    items(addPlantViewModel.imageUrlsState.value) { imageUrl ->
-                        Box(
-                            modifier = Modifier
-                                .padding(end = 8.dp)
-                                .size(100.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                        ) {
-                            Box(modifier = Modifier.fillMaxSize()) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                                ) {
-                                    androidx.compose.foundation.Image(
-                                        painter = rememberAsyncImagePainter(imageUrl),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier.fillMaxSize()
-                                    )
-                                }
-                                // Tlačidlo na odstránenie obrázka
-                                IconButton(
-                                    onClick = { addPlantViewModel.removeImage(imageUrl) },
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .size(24.dp)
-                                        .background(
-                                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
-                                            shape = CircleShape
-                                        )
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = "Odstrániť obrázok",
-                                        tint = MaterialTheme.colorScheme.error,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            // Tlačidlo pre výber z ukážkových obrázkov
-            Text(
-                text = "Vybrať obrázok rastliny",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            LazyRow(
+            // Sekcia s fotkami - novým prístupom
+            ImagePicker(
+                imageUrls = addPlantViewModel.imageUrlsState.value,
+                onImageAdded = { imageUrl -> addPlantViewModel.addImage(imageUrl) },
+                onImageRemoved = { imageUrl -> addPlantViewModel.removeImage(imageUrl) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp),
-                contentPadding = PaddingValues(vertical = 8.dp)
-            ) {
-                items(sampleImages) { imageUrl ->
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .size(100.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable {
-                                addPlantViewModel.addImage(imageUrl)
-                            }
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                        ) {
-                            androidx.compose.foundation.Image(
-                                painter = rememberAsyncImagePainter(imageUrl),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                    }
-                }
-            }
+                    .padding(vertical = 16.dp)
+            )
 
             // Popis rastliny
             Text(

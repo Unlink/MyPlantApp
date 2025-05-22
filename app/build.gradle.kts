@@ -60,6 +60,12 @@ dependencies {
     // Novšia Compose Pager knižnica namiesto zastaralej Accompanist
     implementation("androidx.compose.foundation:foundation:1.6.0")
 
+    // Material Icons Extended - rozšírená sada ikon
+    implementation("androidx.compose.material:material-icons-extended:1.6.0")
+
+    // Accompanist permissions pre jednoduchšiu správu povolení v Compose
+    implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
+
     // Room database
     val roomVersion = "2.7.1"
     implementation("androidx.room:room-runtime:$roomVersion")
