@@ -7,7 +7,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -29,7 +33,8 @@ import sk.duracik.myaiapplication.viewmodel.HomeViewModel
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel = viewModel(),
-    onPlantClick: (plantId: Int) -> Unit = {}
+    onPlantClick: (plantId: Int) -> Unit = {},
+    onAddPlantClick: () -> Unit = {}
 ) {
     // Zbieranie stavu z ViewModelu
     val plants by homeViewModel.plants.collectAsState()
@@ -46,6 +51,16 @@ fun HomeScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors()
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddPlantClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Pridať rastlinu"
+                )
+            }
         }
     ) { paddingValues ->
         LazyVerticalGrid(
