@@ -11,10 +11,12 @@ import androidx.navigation.navArgument
 import sk.duracik.myaiapplication.PlantApplication
 import sk.duracik.myaiapplication.ui.screens.AddPlantScreen
 import sk.duracik.myaiapplication.ui.screens.HomeScreen
+import sk.duracik.myaiapplication.ui.screens.NotificationSettingsScreen
 import sk.duracik.myaiapplication.ui.screens.PlantDetailScreen
 import sk.duracik.myaiapplication.ui.screens.WateringHistoryScreen
 import sk.duracik.myaiapplication.viewmodel.AddPlantViewModel
 import sk.duracik.myaiapplication.viewmodel.HomeViewModel
+import sk.duracik.myaiapplication.viewmodel.NotificationSettingsViewModel
 import sk.duracik.myaiapplication.viewmodel.PlantDetailViewModel
 import sk.duracik.myaiapplication.viewmodel.WateringHistoryViewModel
 
@@ -28,6 +30,7 @@ sealed class Screen(val route: String) {
     object WateringHistory : Screen("watering_history/{plantId}") {
         fun createRoute(plantId: Int) = "watering_history/$plantId"
     }
+    object NotificationSettings : Screen("notification_settings")
 }
 
 @Composable
@@ -53,6 +56,9 @@ fun AppNavigation(navController: NavHostController) {
                 },
                 onAddPlantClick = {
                     navController.navigate(Screen.AddPlant.route)
+                },
+                onSettingsClick = {
+                    navController.navigate(Screen.NotificationSettings.route)
                 }
             )
         }
@@ -112,6 +118,17 @@ fun AppNavigation(navController: NavHostController) {
                 plantId = plantId,
                 wateringHistoryViewModel = wateringHistoryViewModel,
                 onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.NotificationSettings.route) {
+            val notificationViewModel: NotificationSettingsViewModel = viewModel(
+                factory = NotificationSettingsViewModel.Factory(context.applicationContext as PlantApplication)
+            )
+
+            NotificationSettingsScreen(
+                onNavigateBack = { navController.popBackStack() },
+                viewModel = notificationViewModel
             )
         }
     }

@@ -65,12 +65,16 @@ dependencies {
 
     // Accompanist permissions pre jednoduchšiu správu povolení v Compose
     implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
+    implementation(libs.androidx.datastore.core.android)
 
     // Room database
     val roomVersion = "2.7.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")  // Kotlin Extensions a Coroutines support pre Room
     ksp("androidx.room:room-compiler:$roomVersion") // Generátor kódu pre Room
+
+    // DataStore Preferences
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
