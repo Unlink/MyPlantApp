@@ -8,7 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import sk.duracik.myaiapplication.ui.screens.HomeScreen
+import androidx.navigation.compose.rememberNavController
+import sk.duracik.myaiapplication.ui.navigation.AppNavigation
 import sk.duracik.myaiapplication.ui.theme.MyAIApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,7 +22,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeScreen()
+                    val navController = rememberNavController()
+                    AppNavigation(navController = navController)
                 }
             }
         }

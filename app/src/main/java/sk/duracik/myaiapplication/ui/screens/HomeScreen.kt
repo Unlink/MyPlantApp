@@ -25,7 +25,9 @@ import sk.duracik.myaiapplication.ui.theme.MyAIApplicationTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    onPlantClick: (plantId: Int) -> Unit = {}
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -50,7 +52,10 @@ fun HomeScreen() {
                 .padding(paddingValues)
         ) {
             items(PlantRepository.plants) { plant ->
-                PlantCard(plant = plant)
+                PlantCard(
+                    plant = plant,
+                    onClick = { onPlantClick(plant.id) }
+                )
             }
         }
     }

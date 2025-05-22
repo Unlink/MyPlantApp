@@ -2,6 +2,7 @@ package sk.duracik.myaiapplication.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,11 +35,16 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 @Composable
-fun PlantCard(plant: Plant, modifier: Modifier = Modifier) {
+fun PlantCard(
+    plant: Plant,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 4.dp
         ),
