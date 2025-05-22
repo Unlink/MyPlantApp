@@ -6,11 +6,16 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [PlantEntity::class], version = 1, exportSchema = false)
+@Database(
+    entities = [PlantEntity::class, PlantImageEntity::class],
+    version = 2, // Zvýšenie verzie databázy, keďže meníme schému
+    exportSchema = false
+)
 @TypeConverters(DateConverters::class)
 abstract class PlantDatabase : RoomDatabase() {
 
     abstract fun plantDao(): PlantDao
+    abstract fun plantImageDao(): PlantImageDao
 
     companion object {
         @Volatile
@@ -23,7 +28,7 @@ abstract class PlantDatabase : RoomDatabase() {
                     PlantDatabase::class.java,
                     "plant_database"
                 )
-                    .fallbackToDestructiveMigration()
+                    .fallbackToDestructiveMigration() // Pri zmene schémy sa zmaže stará databáza
                     .build()
                 INSTANCE = instance
                 instance
@@ -31,3 +36,4 @@ abstract class PlantDatabase : RoomDatabase() {
         }
     }
 }
+
