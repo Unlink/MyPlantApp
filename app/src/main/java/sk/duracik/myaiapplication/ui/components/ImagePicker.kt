@@ -41,9 +41,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import sk.duracik.myaiapplication.util.ImageHelper
+import sk.duracik.myaiapplication.R
 import java.io.File
 
 @Composable
@@ -308,7 +310,10 @@ fun ImageWithDeleteButton(
     Box(modifier = modifier) {
         // Obrázok
         Image(
-            painter = rememberAsyncImagePainter(model = imageUrl),
+            painter = rememberAsyncImagePainter(
+                model = imageUrl,
+                error = painterResource(id = R.drawable.ic_plant_placeholder)
+            ),
             contentDescription = null,
             modifier = Modifier
                 .size(100.dp)

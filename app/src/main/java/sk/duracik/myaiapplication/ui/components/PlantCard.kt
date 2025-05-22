@@ -25,11 +25,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import sk.duracik.myaiapplication.R
 import sk.duracik.myaiapplication.model.Plant
 import sk.duracik.myaiapplication.ui.theme.MyAIApplicationTheme
 import java.time.LocalDate
@@ -65,7 +67,10 @@ fun PlantCard(
                     .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Image(
-                    painter = rememberAsyncImagePainter(plant.primaryImageUrl),
+                    painter = rememberAsyncImagePainter(
+                        model = plant.primaryImageUrl,
+                        error = painterResource(id = R.drawable.ic_plant_placeholder)
+                    ),
                     contentDescription = plant.name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxWidth()
