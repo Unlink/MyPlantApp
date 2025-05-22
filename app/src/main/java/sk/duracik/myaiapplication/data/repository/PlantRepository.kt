@@ -87,4 +87,26 @@ class PlantRepository(private val plantDao: PlantDao, private val plantImageDao:
         plantDao.deleteAllPlants()
         // Obrázky sa vymažú automaticky vďaka CASCADE vymazávaniu
     }
+
+    // Pridanie obrázka k rastline
+    suspend fun addPlantImage(plantId: Int, imageUrl: String) {
+        // Zistíme aktuálny počet obrázkov pre správny sortOrder
+        val images = plantImageDao.getImagesForPlantSync(plantId)
+        val sortOrder = images.size
+        val imageEntity = PlantImageEntity(
+            plantId = plantId,
+            imageUrl = imageUrl,
+            sortOrder = sortOrder
+        )
+        plantImageDao.insertImage(imageEntity)
+    }
+
+    // Odstránenie obrázka podľa URL
+    suspend fun removePlantImage(plantId: Int, imageUrl: String) {
+        val images = plantImageDao.getImagesForPlantSync(plantId)
+        val imageToDelete = images.find { it.imageUrl == imageUrl }
+        imageToDelete?.let {
+            plantImageDao.deleteImage(it)
+        }
+    }
 }

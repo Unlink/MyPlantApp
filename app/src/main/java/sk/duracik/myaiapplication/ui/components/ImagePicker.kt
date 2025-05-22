@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -159,13 +161,13 @@ fun ImagePicker(
 
         // Zobrazenie už pridaných obrázkov s možnosťou odstránenia
         if (imageUrls.isNotEmpty()) {
-            Row(
+            LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                imageUrls.forEach { imageUrl ->
+                items(imageUrls, key = { it }) { imageUrl ->
                     ImageWithDeleteButton(
                         imageUrl = imageUrl,
                         onDeleteClick = { onImageRemoved(imageUrl) }

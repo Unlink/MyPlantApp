@@ -23,6 +23,30 @@ class PlantDetailViewModel(private val repository: PlantRepository) : ViewModel(
         }
     }
 
+    // Pridanie fotky k rastline
+    fun addPhoto(imageUrl: String) {
+        val plant = _plantState.value
+        if (plant != null) {
+            viewModelScope.launch {
+                repository.addPlantImage(plant.id, imageUrl)
+                // Po pridaní obnovíme detail rastliny
+                loadPlant(plant.id)
+            }
+        }
+    }
+
+    // Odstránenie fotky podľa URL
+    fun removePhoto(imageUrl: String) {
+        val plant = _plantState.value
+        if (plant != null) {
+            viewModelScope.launch {
+                repository.removePlantImage(plant.id, imageUrl)
+                // Po odstránení obnovíme detail rastliny
+                loadPlant(plant.id)
+            }
+        }
+    }
+
     // Factory trieda pre vytvorenie ViewModelu s repozitárom
     class PlantDetailViewModelFactory(private val repository: PlantRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

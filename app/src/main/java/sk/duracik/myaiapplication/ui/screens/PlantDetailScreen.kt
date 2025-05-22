@@ -3,6 +3,7 @@ package sk.duracik.myaiapplication.ui.screens
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,6 +35,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -40,12 +45,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import sk.duracik.myaiapplication.R
 import sk.duracik.myaiapplication.model.Plant
 import sk.duracik.myaiapplication.ui.theme.MyAIApplicationTheme
 import sk.duracik.myaiapplication.viewmodel.PlantDetailViewModel
+import sk.duracik.myaiapplication.ui.components.ImagePicker
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -67,6 +74,8 @@ fun PlantDetailScreen(
 
     // Ak je plant null, ešte dáta nemáme, môžeme zobraziť napr. loading indikátor
     plant?.let { currentPlant ->
+        // Stav pre zobrazenie dialogu na správu fotiek
+        val showImageDialog = remember { mutableStateOf(false) }
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -81,6 +90,14 @@ fun PlantDetailScreen(
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
                                 contentDescription = "Späť"
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { showImageDialog.value = true }) {
+                            Icon(
+                                imageVector = Icons.Default.PhotoLibrary,
+                                contentDescription = "Spravovať fotky"
                             )
                         }
                     },
@@ -226,6 +243,33 @@ fun PlantDetailScreen(
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(vertical = 4.dp)
                         )
+                    }
+                }
+            }
+
+            // Dialog na správu fotiek
+            if (showImageDialog.value) {
+                Dialog(onDismissRequest = { showImageDialog.value = false }) {
+                    Surface(
+                        shape = MaterialTheme.shapes.medium,
+                        tonalElevation = 4.dp
+                    ) {
+                        ImagePicker(
+                            imageUrls = currentPlant.imageUrls,
+                            onImageAdded = { imageUrl ->
+                                plantDetailViewModel.addPhoto(imageUrl)
+                            },
+                            onImageRemoved = { imageUrl ->
+                                plantDetailViewModel.removePhoto(imageUrl)
+                            },
+                            modifier = Modifier.padding(16.dp)
+                        )
+                        // Zavrieť dialóg po akcii
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                            Button(onClick = { showImageDialog.value = false }) {
+                                Text("Zavrieť")
+                            }
+                        }
                     }
                 }
             }
