@@ -21,7 +21,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,7 +41,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -48,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import sk.duracik.myaiapplication.PlantApplication
 import sk.duracik.myaiapplication.R
 import sk.duracik.myaiapplication.model.Plant
 import sk.duracik.myaiapplication.ui.theme.MyAIApplicationTheme
@@ -61,7 +66,11 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun PlantDetailScreen(
     plantId: Int,
-    plantDetailViewModel: PlantDetailViewModel = viewModel(),
+    plantDetailViewModel: PlantDetailViewModel = viewModel(
+        factory = PlantDetailViewModel.PlantDetailViewModelFactory(
+            (LocalContext.current.applicationContext as PlantApplication).repository
+        )
+    ),
     onNavigateBack: () -> Unit
 ) {
     // Pri vstupe na obrazovku načítame dáta o rastline
@@ -220,6 +229,83 @@ fun PlantDetailScreen(
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
+
+                        // Sekcia o zalievaní
+                        Divider(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp)
+                        )
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        ) {
+                            Column {
+                                Text(
+                                    text = "Zalievanie",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                )
+
+                                val wateringText = when {
+                                    currentPlant.lastWatering == null -> "Rastlina ešte nebola zaliata"
+                                    currentPlant.daysSinceLastWatering == 0L -> "Zalievaná dnes"
+                                    currentPlant.daysSinceLastWatering == 1L -> "Zalievaná včera"
+                                    else -> "Naposledy zaliata pred ${currentPlant.daysSinceLastWatering} dňami"
+                                }
+
+                                // Riadok s informáciou o zalievaní
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                ) {
+                                    val wateringColor = when {
+                                        currentPlant.lastWatering == null -> MaterialTheme.colorScheme.error
+                                        currentPlant.daysSinceLastWatering > 7 -> Color(0xFFFF6D00)
+                                        else -> Color(0xFF2E7D32)
+                                    }
+
+                                    Icon(
+                                        imageVector = Icons.Default.WaterDrop,
+                                        contentDescription = "Stav zalievania",
+                                        tint = wateringColor
+                                    )
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+
+                                    Text(
+                                        text = wateringText,
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
+                                // Ak máme históriu zalievania, zobrazíme dátum posledného zalievania
+                                if (currentPlant.lastWatering != null) {
+                                    val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+                                    Text(
+                                        text = "Posledné zaliatie: ${currentPlant.lastWatering!!.format(formatter)}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier.padding(start = 32.dp, top = 4.dp)
+                                    )
+                                }
+                            }
+
+                            // Tlačidlo na zaliatie rastliny
+                            Button(
+                                onClick = { plantDetailViewModel.waterPlant() }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.WaterDrop,
+                                    contentDescription = "Zaliať rastlinu"
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Zaliať")
+                            }
+                        }
 
                         // Popis rastliny
                         Text(

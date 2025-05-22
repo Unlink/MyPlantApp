@@ -6,9 +6,17 @@ import sk.duracik.myaiapplication.data.local.PlantDao
 import sk.duracik.myaiapplication.data.local.PlantEntity
 import sk.duracik.myaiapplication.data.local.PlantImageDao
 import sk.duracik.myaiapplication.data.local.PlantImageEntity
+import sk.duracik.myaiapplication.data.local.WateringDao
+import sk.duracik.myaiapplication.data.local.WateringEntity
 import sk.duracik.myaiapplication.model.Plant
+import sk.duracik.myaiapplication.model.Watering
+import java.time.LocalDate
 
-class PlantRepository(private val plantDao: PlantDao, private val plantImageDao: PlantImageDao) {
+class PlantRepository(
+    private val plantDao: PlantDao,
+    private val plantImageDao: PlantImageDao,
+    private val wateringDao: WateringDao
+) {
 
     // Získanie všetkých rastlín ako Flow
     val allPlants: Flow<List<Plant>> = plantDao.getAllPlants().map { plantEntities ->
@@ -16,8 +24,13 @@ class PlantRepository(private val plantDao: PlantDao, private val plantImageDao:
             // Pre každú rastlinu získame zoznam URL adries jej obrázkov
             val images = plantImageDao.getImagesForPlantSync(plantEntity.id)
             val imageUrls = images.map { it.imageUrl }
-            // Vytvoríme rastlinu so zoznamom URL adries
-            PlantEntity.toPlant(plantEntity, imageUrls)
+
+            // Získame záznamy o zalievaní pre túto rastlinu
+            val wateringEntities = wateringDao.getWateringsForPlant(plantEntity.id)
+            val wateringRecords = wateringEntities.map { WateringEntity.toWatering(it) }
+
+            // Vytvoríme rastlinu so zoznamom URL adries a záznamami o zalievaní
+            PlantEntity.toPlant(plantEntity, imageUrls, wateringRecords)
         }
     }
 
@@ -28,8 +41,13 @@ class PlantRepository(private val plantDao: PlantDao, private val plantImageDao:
             // Získame zoznam URL adries obrázkov pre túto rastlinu
             val images = plantImageDao.getImagesForPlantSync(it.id)
             val imageUrls = images.map { image -> image.imageUrl }
-            // Vytvoríme rastlinu so zoznamom URL adries
-            PlantEntity.toPlant(it, imageUrls)
+
+            // Získame záznamy o zalievaní pre túto rastlinu
+            val wateringEntities = wateringDao.getWateringsForPlant(it.id)
+            val wateringRecords = wateringEntities.map { entity -> WateringEntity.toWatering(entity) }
+
+            // Vytvoríme rastlinu so zoznamom URL adries a záznamami o zalievaní
+            PlantEntity.toPlant(it, imageUrls, wateringRecords)
         }
     }
 
@@ -109,4 +127,28 @@ class PlantRepository(private val plantDao: PlantDao, private val plantImageDao:
             plantImageDao.deleteImage(it)
         }
     }
+
+    // Pridanie záznamu o zalievaní rastliny
+    suspend fun addWatering(plantId: Int) {
+        // Vytvorenie nového záznamu o zalievaní
+        val wateringEntity = WateringEntity(
+            plantId = plantId,
+            date = LocalDate.now().toString()
+        )
+
+        // Uloženie záznamu o zalievaní do databázy
+        wateringDao.insertWatering(wateringEntity)
+    }
+
+    // Získanie všetkých záznamov o zalievaní pre konkrétnu rastlinu
+    suspend fun getWateringsForPlant(plantId: Int): List<Watering> {
+        val wateringEntities = wateringDao.getWateringsForPlant(plantId)
+        return wateringEntities.map { WateringEntity.toWatering(it) }
+    }
+
+    // Získanie ID pre nový záznam o zalievaní
+    private suspend fun getNextWateringId(plant: Plant): Int {
+        return plant.wateringRecords.maxOfOrNull { it.id }?.plus(1) ?: 1
+    }
+
 }

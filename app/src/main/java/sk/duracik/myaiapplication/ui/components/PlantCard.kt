@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import sk.duracik.myaiapplication.R
 import sk.duracik.myaiapplication.model.Plant
+import sk.duracik.myaiapplication.model.Watering
 import sk.duracik.myaiapplication.ui.theme.MyAIApplicationTheme
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -94,7 +97,7 @@ fun PlantCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.DateRange,
@@ -105,6 +108,42 @@ fun PlantCard(
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = "V zbierke $daysOwned dní",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            // Pridanie zobrazenia informácií o zalievaní
+            val daysSinceWatering = plant.daysSinceLastWatering
+            val wateringText = when {
+                daysSinceWatering == -1L -> "Nikdy nezalievaná"
+                daysSinceWatering == 0L -> "Zalievaná dnes"
+                daysSinceWatering == 1L -> "Zalievaná včera"
+                else -> "Zalievaná pred $daysSinceWatering dňami"
+            }
+
+            // Farba ikony zalievania sa mení podľa stavu zalievania
+            val wateringColor = when {
+                daysSinceWatering == -1L -> MaterialTheme.colorScheme.error  // Nikdy nezalievaná
+                daysSinceWatering > 7 -> Color(0xFFFF6D00)  // Viac ako týždeň - oranžová
+                else -> Color(0xFF2E7D32)  // Nedávno zalievaná - zelená
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.WaterDrop,
+                    contentDescription = "Posledné zaliatie",
+                    tint = wateringColor,
+                    modifier = Modifier.width(20.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = wateringText,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -125,7 +164,14 @@ fun PlantCardPreview() {
                     "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921",
                     "https://images.unsplash.com/photo-1509423350716-97f9360b4e09"
                 ),
-                dateAdded = LocalDate.now().minusDays(120)
+                dateAdded = LocalDate.now().minusDays(120),
+                wateringRecords = listOf(
+                    Watering(
+                        id = 1,
+                        plantId = 1,
+                        date = LocalDate.now().minusDays(3)
+                    )
+                )
             )
         )
     }

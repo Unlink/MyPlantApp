@@ -16,7 +16,8 @@ class PlantApplication : Application() {
     val repository by lazy {
         PlantRepository(
             plantDao = database.plantDao(),
-            plantImageDao = database.plantImageDao()
+            plantImageDao = database.plantImageDao(),
+            wateringDao = database.wateringDao()
         )
     }
 

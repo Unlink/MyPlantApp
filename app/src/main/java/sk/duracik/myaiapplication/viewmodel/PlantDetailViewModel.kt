@@ -47,6 +47,18 @@ class PlantDetailViewModel(private val repository: PlantRepository) : ViewModel(
         }
     }
 
+    // Pridanie záznamu o zalievaní rastliny
+    fun waterPlant() {
+        val plant = _plantState.value
+        if (plant != null) {
+            viewModelScope.launch {
+                repository.addWatering(plant.id)
+                // Po zaliatí obnovíme detail rastliny
+                loadPlant(plant.id)
+            }
+        }
+    }
+
     // Factory trieda pre vytvorenie ViewModelu s repozitárom
     class PlantDetailViewModelFactory(private val repository: PlantRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

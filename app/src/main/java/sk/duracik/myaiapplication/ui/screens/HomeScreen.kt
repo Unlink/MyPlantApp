@@ -29,7 +29,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import sk.duracik.myaiapplication.repository.PlantRepository
 import sk.duracik.myaiapplication.ui.components.PlantCard
 import sk.duracik.myaiapplication.ui.theme.MyAIApplicationTheme
 import sk.duracik.myaiapplication.viewmodel.HomeViewModel
