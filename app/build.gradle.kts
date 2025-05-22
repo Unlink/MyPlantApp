@@ -55,7 +55,9 @@ dependencies {
 
     // Navigation Compose
     implementation("androidx.navigation:navigation-compose:2.7.7")
-    implementation(libs.androidx.navigation.runtime.android)
+
+    // Novšia Compose Pager knižnica namiesto zastaralej Accompanist
+    implementation("androidx.compose.foundation:foundation:1.6.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

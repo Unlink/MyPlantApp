@@ -59,7 +59,7 @@ fun PlantCard(
                     .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Image(
-                    painter = rememberAsyncImagePainter(plant.imageUrl),
+                    painter = rememberAsyncImagePainter(plant.primaryImageUrl),
                     contentDescription = plant.name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxWidth()
@@ -110,7 +110,10 @@ fun PlantCardPreview() {
             plant = Plant(
                 id = 1,
                 name = "Aloe Vera",
-                imageUrl = "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921",
+                imageUrls = listOf(
+                    "https://images.unsplash.com/photo-1596547609652-9cf5d8d76921",
+                    "https://images.unsplash.com/photo-1509423350716-97f9360b4e09"
+                ),
                 dateAdded = LocalDate.now().minusDays(120)
             )
         )

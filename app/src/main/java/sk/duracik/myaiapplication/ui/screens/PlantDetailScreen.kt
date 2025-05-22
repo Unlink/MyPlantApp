@@ -1,6 +1,8 @@
 package sk.duracik.myaiapplication.ui.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -30,7 +34,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -45,7 +48,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun PlantDetailScreen(
     plantId: Int,
@@ -89,16 +92,6 @@ fun PlantDetailScreen(
                     .padding(paddingValues)
                     .verticalScroll(rememberScrollState())
             ) {
-                // Obrázok rastliny
-                Image(
-                    painter = rememberAsyncImagePainter(currentPlant.imageUrl),
-                    contentDescription = currentPlant.name,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                )
-
                 // Názov rastliny
                 Text(
                     text = currentPlant.name,
@@ -109,6 +102,49 @@ fun PlantDetailScreen(
                         .padding(16.dp),
                     textAlign = TextAlign.Center
                 )
+
+                // Horizontálny pager pre obrázky s použitím novej Compose API
+                val pagerState = rememberPagerState { currentPlant.imageUrls.size }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(320.dp)
+                ) {
+                    HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier.fillMaxSize()
+                    ) { page ->
+                        Image(
+                            painter = rememberAsyncImagePainter(currentPlant.imageUrls[page]),
+                            contentDescription = "${currentPlant.name} - fotka ${page + 1}",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+
+                    // Jednoduchý indikátor pre obrázky
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(16.dp)
+                    ) {
+                        repeat(currentPlant.imageUrls.size) { index ->
+                            val color = if (pagerState.currentPage == index)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.surfaceVariant
+
+                            Box(
+                                modifier = Modifier
+                                    .padding(horizontal = 4.dp)
+                                    .width(8.dp)
+                                    .height(8.dp)
+                                    .background(color = color, shape = androidx.compose.foundation.shape.CircleShape)
+                            )
+                        }
+                    }
+                }
 
                 Surface(
                     modifier = Modifier
@@ -187,6 +223,7 @@ fun PlantDetailScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Preview(showBackground = true)
 @Composable
 fun PlantDetailScreenPreview() {
